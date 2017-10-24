@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>批量地址</title>
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#l-map{height:300px;width:100%;}
+		#r-result{width:100%; font-size:14px;line-height:20px;}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=787a9ed9f4d536d533bd54566b9e3ccc"></script>
+</head>
+<body>
+	<div id="l-map"></div>
+	<div id="r-result">
+		<input type="button" value="批量地址解析" onclick="geocodeSearch()" />
+		<div id="result"></div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("l-map");
+	map.centerAndZoom(new BMap.Point(117.269945,31.86713), 13);
+	map.enableScrollWheelZoom(true);
+	var index = 0;
+	var myGeo = new BMap.Geocoder();
+	var adds = [
+		"北京","上海","天津","重庆","哈尔滨","长春","沈阳","呼和浩特","石家庄","乌鲁木齐","兰州","西宁","西安","银川","郑州","济南","太原","合肥","武汉","长沙","南京","成都","贵阳","昆明","南宁","拉萨","杭州","南昌","广州","福州","海口"
+	];
+	var pointI;
+	var pointJ;
+	function geocodeSearch(){
+		for (var i = 0; i < 2; ++i)
+		{
+			for (var j = 0; j < 2; ++j)
+			{
+				myGeo.getPoint(adds[i], function(point){
+					if (point) {
+						pointI = point;
+					}
+					else{
+						document.getElementById("result").innerHTML +=  "false" + "</br>";
+					}
+					
+				});
+				//	document.getElementById("result").innerHTML +=  index + "、" + adds[i] + ":" + pointI.lng + "," + pointI.lat + "</br>";
+				myGeo.getPoint(adds[j], function(point){
+					if (point) {
+						pointJ = point;
+					}
+					else{
+						document.getElementById("result").innerHTML +=  "false" + "</br>";
+					}
+					
+				});
+				//	document.getElementById("result").innerHTML +=  index + "、" + adds[j] + ":" + pointI.lng + "," + pointI.lat + " " +map.getDistance(pointI,pointJ) + "</br>";
+				document.getElementById("result").innerHTML +=  map.getDistance(pointI,pointJ) + ",";
+			}
+			document.getElementById("result").innerHTML +=  "</br>";
+		}
+	}
+</script>
