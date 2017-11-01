@@ -102,7 +102,12 @@ public:
     GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC)
         : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1)
     {
-        InitPopulation();
+        mPopulation = new Chromosom[mNP];
+        for(int i = 0; i < mNP; i++)
+        {
+            Chromosom *tmp = new Chromosom(mGeneSize);
+            mPopulation[i] = *tmp;
+        }
     }
 
     ~GeneticAlgorithm()
@@ -115,19 +120,9 @@ public:
         return mPopulation;
     }
 
-    void InitPopulation()
-    {
-        mPopulation = new Chromosom[mNP];
-        for(int i = 0; i < mNP; i++)
-        {
-            Chromosom *tmp = new Chromosom(mGeneSize);
-            mPopulation[i] = *tmp;
-        }
-    }
-
     void print()
     {
-        cout << mPopulation[15].GetSize() << endl;
+        cout << mPopulation << endl;
     }
 };
 
@@ -184,15 +179,11 @@ int main()
 */
 
 //测试初始化种群
-    GeneticAlgorithm Gtest(15,1,115,0,0);
+/*    GeneticAlgorithm Gtest(15,1,115,0,0);
     Gtest.print();
-   // Chromosom Gp = Gtest.mPopulation[0];
+    Chromosom *Gp = Gtest.GetPopulation();
+    cout << Gp[10].GetSize() << endl;
+*/
 
-    //cout << Gp.GetSize() << endl;
-    /*int *Gb = Gp[0].GetGene();
-    for(int i = 0; i < Gp[0].GetSize(); i++)
-    {
-        cout << "Gb[" << i << "]= " << Gb[i] << endl;
-    }*/
     return 0;
 }
