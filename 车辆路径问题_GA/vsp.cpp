@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
-#include<ctime>
-#include<cstdlib>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
@@ -69,12 +69,23 @@ public:
         return *this;
     }
 
-    
+    void mutation()//变异 2-opt
+    {
+        int rand1 = rand()%mSize;
+        int rand2 = rand()%mSize;
+        if(rand1 != rand2)
+        {
+            int tmp = mGene[rand1];
+            mGene[rand1] = mGene[rand2];
+            mGene[rand2] = tmp;
+        }
+    }
 };
 
 int main()
 {
-    int size = 15;
+//测试克隆
+/*    int size = 15;
     Chromosom test(size);
     int *a = test.GetGene();
     for(int i = 0; i < test.GetSize(); i++)
@@ -93,6 +104,22 @@ int main()
     for(int i = 0; i < test2.GetSize(); i++)
     {
         cout << "c[" << i << "]= " << c[i] << endl;
+    }
+*/
+
+//测试变异
+    int size = 10;
+    Chromosom test3(size);
+    int *d = test3.GetGene();
+    for(int i = 0; i < test3.GetSize(); i++)
+    {
+        cout << "d[" << i << "]= " << d[i] << endl;
+    }
+    test3.mutation();
+    int *e = test3.GetGene();
+    for(int i = 0; i < test3.GetSize(); i++)
+    {
+        cout << "e[" << i << "]= " << e[i] << endl;
     }
 
     return 0;
