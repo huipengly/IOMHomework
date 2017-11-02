@@ -63,7 +63,7 @@ protected:
     double mScore;
     int mSize;
     int mCarNum;    //车辆使用数目
-    int mSumDis;
+    double mSumDis;
     int *mPlan;     //记录每辆车起点基因段
     //TODO:不要搞成类内的，初始化
     double **mCustomerDis;
@@ -71,7 +71,7 @@ protected:
     int mCapacity;
 
 public:
-    Chromosome(int size) : mScore(0), mCarNum(0), mSumDis(0)//, mCustomerDis(CustomerDis), mCustomer(customer), mCapacity(capacity)
+	Chromosome(int size, double **customerDis, Customer *customer, int capacity) : mScore(0), mCarNum(0), mSumDis(0), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
     {
         mSize = size;
         if(mSize >= 0)
@@ -83,7 +83,7 @@ public:
                 mGene[i] = i + 1;
             }
             srand(time(0));
-            random_shuffle(mGene, mGene+mSize);
+            //random_shuffle(mGene, mGene+mSize);
         }
     }
 
@@ -96,6 +96,28 @@ public:
     {
         delete[] mGene;
         delete[] mPlan;
+    }
+
+    void print()
+	{
+		for (int i = 0; i < mSize; i++)
+		{
+			cout << mGene[i] << " ";
+		}
+		cout << endl;
+		for (int i(0), j(0); j < mSize; j++)
+		{
+			if (mPlan[i] == j)
+			{
+				cout << "| ";
+				i++;
+			}
+			cout << mGene[j] << " ";
+		}
+		cout << endl;
+        cout << "mSize = " << mSize << endl;
+        cout << "mCarNum = " << mCarNum << endl;
+        cout << "mSumDis = " << mSumDis << endl;
     }
 
     int *GetGene()
@@ -152,22 +174,22 @@ public:
       //  int *gene = chro.GetGene();
       //  int size = chro.GetSize();
         int sumDemand = 0;
-        if(mGene == NULL)
+        if(mGene != NULL)
         {
             for(int i = 0; i < mSize; i++)
             {
                 sumDemand += mCustomer[mGene[i]].GetDemand();
                 if(sumDemand > mCapacity)//超出一辆车载重
                 {
-                    i--;    //回退，当前需求由下一辆车来满足
                     mPlan[mCarNum] = i;
+                    i--;    //回退，当前需求由下一辆车来满足
                     sumDemand = 0;
                     mSumDis += mCustomerDis[0][mGene[i-1]];    //加上最后一个点回起始点的距离
                     mCarNum++;
                 }
                 else
                 {
-                    if(sumDemand == 0)
+					if (sumDemand == mCustomer[mGene[i]].GetDemand())
                     {
                         mSumDis += mCustomerDis[0][mGene[i]];
                     }
@@ -191,16 +213,19 @@ protected:
     int mPM;                //变异率
     int mPC;                //交叉率
     int mGeneration;        //进化代数
+	double **mCustomerDis;
+	Customer *mCustomer;
+	int mCapacity;
 
 public:
-    GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **CustomerDis, Customer *customer, int capacity)
-        : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1)
+    GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
+		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
     {
         mPopulation = new Chromosome[mNP];
         for(int i = 0; i < mNP; i++)
         {
            // Chromosome *tmp = new Chromosome(mGeneSize);
-            mPopulation[i] = *(new Chromosome(mGeneSize));
+			mPopulation[i] = *(new Chromosome(mGeneSize, mCustomerDis, mCustomer, mCapacity));
         }
     }
 
@@ -254,15 +279,22 @@ int main()
                                      pow((customer[i].GetY() - customer[j].GetY()), 2));
         }
     }
+
+	Chromosome chro(dimension-1, CustomerDis, customer, capacity);
+	//int *a = chro.GetGene();
+	//for (int i = 0; i < chro.GetSize(); i++)
+	//{
+	//	cout << "a[" << i << "]= " << a[i] << endl;
+	//}
+    chro.CalculateDistance();
+    chro.print();
+
     
-    for(int i = 0; i < dimension; i++)
-    {
-        for(int j = 0; j < dimension; j++)
-        {
-           cout << CustomerDis[i][j] << " ";
-        }
-        cout << endl;
-    }
+     //for(int i = 0; i < dimension; i++)
+     //{
+     //   cout << customer[i].GetDemand() << " ";
+     //    cout << endl;
+     //}
 
 //测试克隆
 /*    int size = 15;
@@ -320,6 +352,7 @@ int main()
     Chromosome *Gp = Gtest.GetPopulation();
     cout << Gp[10].GetSize() << endl;
 */
-
+	cout << "press any key to continue..." << endl;
+	getchar();
     return 0;
 }
