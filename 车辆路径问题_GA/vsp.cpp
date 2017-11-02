@@ -83,7 +83,7 @@ public:
                 mGene[i] = i + 1;
             }
             srand(time(0));
-            //random_shuffle(mGene, mGene+mSize);
+            random_shuffle(mGene, mGene+mSize);
         }
     }
 
@@ -102,17 +102,20 @@ public:
 	{
 		for (int i = 0; i < mSize; i++)
 		{
-			cout << mGene[i] << " ";
+			cout << mGene[i] + 1 << " ";
 		}
 		cout << endl;
+		cout << "NO.1 Car's Customer : ";
 		for (int i(0), j(0); j < mSize; j++)
 		{
 			if (mPlan[i] == j)
 			{
-				cout << "| ";
+				//cout << "| ";
+				cout << endl;
+				cout << "NO." << i + 1 << " Car's Customer : ";
 				i++;
 			}
-			cout << mGene[j] << " ";
+			cout << mGene[j] + 1 << " ";
 		}
 		cout << endl;
         cout << "mSize = " << mSize << endl;
@@ -198,6 +201,10 @@ public:
                         mSumDis += mCustomerDis[mGene[i]][mGene[i-1]];
                     }
                 }
+				if ((i + 1) == mSize)
+				{
+					mSumDis += mCustomerDis[0][mGene[i]];
+				}
             }
         }
     }
@@ -280,7 +287,7 @@ int main()
         }
     }
 
-	Chromosome chro(dimension-1, CustomerDis, customer, capacity);
+	Chromosome chro(3-1, CustomerDis, customer, capacity);
 	//int *a = chro.GetGene();
 	//for (int i = 0; i < chro.GetSize(); i++)
 	//{
