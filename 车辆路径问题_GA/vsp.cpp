@@ -233,6 +233,7 @@ class GeneticAlgorithm
 {
 protected:
     Chromosome *mPopulation; //种群
+	Chromosome *mChildPopulation;
     int mNP;                //种群个数
     int mNG;                //最大进化代数
     int mGeneSize;          //基因长度，定长
@@ -251,7 +252,7 @@ protected:
 
 public:
     GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
-        : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
+        : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
         , xi(rand()/static_cast<double>(RAND_MAX))
     {
         mPopulation = new Chromosome[mNP];
@@ -332,7 +333,14 @@ public:
 
 	void evolve()//TODO:保留最优子代
 	{
-		Chromosome *mChildPopulation = new Chromosome[mNP];
+		int a, b;
+		bool aa = true;
+		mChildPopulation = new Chromosome[mNP];
+		//TODO:一坨染色体复制
+		for (int i = 0; i < mNP; i++)
+		{
+			mChildPopulation[i] = mPopulation[i];
+		}
 		//Chromosome chro1, chro2;
 		Roulette();
 		int *c1, *c2;
@@ -341,8 +349,37 @@ public:
 			//TODO：改成轮盘赌取
 			//chro1 = mPopulation[i];
 			//chro2 = mPopulation[i+1];
-			c1 = mPopulation[i].GetGene();
-			c2 = mPopulation[i + 1].GetGene();
+			double randval1 = rand() / static_cast<double>(RAND_MAX);
+			double randval2 = rand() / static_cast<double>(RAND_MAX);
+			int rand1, rand2;
+			for (int i = 0; i < mGeneSize; i++)
+			{
+				if (i == 0)
+				{
+					if (wheel[i] > randval1)
+					{
+						rand1 = i;
+					}
+
+					if (wheel[i] > randval2)
+					{
+						rand2 = i;
+					}
+				}
+				else
+				{
+					if ((wheel[i-1] < randval1) && (wheel[i] > randval1))
+					{
+						rand1 = i;
+					}
+					if ((wheel[i - 1] < randval2) && (wheel[i] > randval2))
+					{
+						rand2 = i;
+					}
+				}
+			}
+			c1 = mChildPopulation[rand1].GetGene();
+			c2 = mChildPopulation[rand2].GetGene();
 			//交换30-40，按30-40的规律改变其他 TODO:改成随机
 			for (int j = 30; j < 40; j++)//交换部分基因段
 			{
@@ -382,12 +419,55 @@ public:
 					}
 				}
 			}
+			if (aa)
+			{
+				a = rand1;
+				b = rand2;
+				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+				cout << a << ":";
+				mPopulation[a].print();
+				cout << b << ":";
+				mPopulation[b].print();
+				aa = false;
+				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+				cout << rand1 << ":";
+				mChildPopulation[rand1].print();
+				cout << rand2 << ":";
+				mChildPopulation[rand2].print();
+				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			}
 		}
-		//delete[] mPopulation;TODO:确定是否内存泄漏
+	//	delete[] mPopulation;//TODO:确定是否内存泄漏
 		//mPopulation = mChildPopulation;//新子代取代上一代
+
+		/*cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
+		cout << "mPopulation:" << mPopulation << endl;
+		cout << "mChildPopulation" << mChildPopulation << endl;
+		cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;*/
+
+		for (int i = 0; i < mNP; i++)
+		{
+			mPopulation[i] = mChildPopulation[i];
+		}
+		//TODO:	新生成的子种群无法赋值给种群，假设已经生成
+		cout << a << ":";
+		mPopulation[a].print();
+		cout << b << ":";
+		mPopulation[b].print();
+		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 	}
 
-
+	void caculte()
+	{
+		mGeneration = 1;
+		CaculteScore();
+		while (mGeneration < mNG)
+		{
+			evolve();
+			CaculteScore();
+			mGeneration++;
+		}
+	}
 };
 
 int main()
