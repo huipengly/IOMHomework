@@ -127,6 +127,11 @@ public:
         return mGene;
     }
 
+	//void SetGene(int *gene)
+	//{
+	//	mGene = gene;
+	//}
+
     double GetScore()
     {
         return mScore;
@@ -320,9 +325,49 @@ public:
             }
         }
 
-        //产生子代TODO:
 
     }
+        //产生子代TODO:
+
+	void evolve()//TODO:保留最优子代
+	{
+		Chromosome *mChildPopulation = new Chromosome[mNP];
+		Roulette();
+		int *c1, *c2;
+		for (int i = 0; i < mNP/2; i++)//生成子代，部分映射交叉
+		{
+			//交换30-40，按30-40的规律改变其他 TODO:改成随机
+			for (int j = 30; j < 40; j++)//交换部分基因段
+			{//TODO：改成轮盘赌取
+				c1 = mPopulation[i].GetGene();
+				c2 = mPopulation[i].GetGene();
+				swap(c1[j], c2[j]);
+			}
+			for (int k = 0; k < mGeneSize; k++)//其他基因段根据交叉段改变
+			{
+				if (k == 30)
+				{
+					k = 40;
+				}
+				else
+				{
+					for (int l = 30; l < 40; l++)
+					{
+						if (c1[k] == c1[l])
+						{
+							c1[k] = c2[k];
+						}
+						else if (c1[k] == c2[l])
+						{
+							c1[k] = c1[l];
+						}
+					}
+				}
+			}
+		}
+		delete[] mPopulation;
+		mPopulation = mChildPopulation;//新子代取代上一代
+	}
 
 
 };
