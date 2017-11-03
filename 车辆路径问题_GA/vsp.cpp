@@ -258,14 +258,15 @@ protected:
     double maxdis;
     double TotleScore;
     double MaxScore;
+	double MinDis;
     int maxGene;
     double xi;//ξ
     double *wheel;
 
 public:
-    GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
-        : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
-		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL)
+	GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
+		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
+		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), MinDis(1e10)
     {
         mPopulation = new Chromosome[mNP];
         for(int i = 0; i < mNP; i++)
@@ -292,7 +293,8 @@ public:
 
     void print()
     {
-        cout << mPopulation << endl;
+        //cout << mPopulation << endl;
+		cout << "minDis" << MinDis << endl;
     }
 
     //计算种群得分TODO:
@@ -309,6 +311,10 @@ public:
 			{
                 maxGene = i;
 				maxdis = mPopulation[i].GetDistance();
+			}
+			if (MinDis > mPopulation[i].GetDistance())
+			{
+				MinDis = mPopulation[i].GetDistance();
 			}
 		}
 
@@ -473,25 +479,26 @@ public:
 			//		}
 			//	}
 			//}
-			if (aa)
-			{
-				a = rand1;
-				b = rand2;
-				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-				cout << "old pop" << endl;
-				cout << rand1 << ":";
-				mPopulation[rand1].print();
-				cout << rand2 << ":";
-				mPopulation[rand2].print();
-				aa = false;
-				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-				cout << "c in pop" << endl;
-				cout << a << ":";
-				mChildPopulation[0].print();
-				cout << b << ":";
-				mChildPopulation[1].print();
-				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-			}
+
+			//if (aa)
+			//{
+			//	a = rand1;
+			//	b = rand2;
+			//	cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			//	cout << "old pop" << endl;
+			//	cout << rand1 << ":";
+			//	mPopulation[rand1].print();
+			//	cout << rand2 << ":";
+			//	mPopulation[rand2].print();
+			//	aa = false;
+			//	cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			//	cout << "c in pop" << endl;
+			//	cout << a << ":";
+			//	mChildPopulation[0].print();
+			//	cout << b << ":";
+			//	mChildPopulation[1].print();
+			//	cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			//}
 
 			//cout << "c in pop" << endl;
 			//cout << "i = " << i << endl;
@@ -502,12 +509,12 @@ public:
 			//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 		}
 
-		cout << "c out pop" << endl;
-		cout << a << ":";
-		mChildPopulation[0].print();
-		cout << b << ":";
-		mChildPopulation[1].print();
-		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+		//cout << "c out pop" << endl;
+		//cout << a << ":";
+		//mChildPopulation[0].print();
+		//cout << b << ":";
+		//mChildPopulation[1].print();
+		//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 
 		//TODO:研究可否直接用地址赋值
 		for (int i = 0; i < mNP; i++)
@@ -519,12 +526,12 @@ public:
 		//TODO:	新生成的子种群无法赋值给种群，假设已经生成
 
 		//CaculteScore();
-		cout << "new pop" << endl;
-		cout << a << ":";
-		mPopulation[0].print();
-		cout << b << ":";
-		mPopulation[1].print();
-		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+		//cout << "new pop" << endl;
+		//cout << a << ":";
+		//mPopulation[0].print();
+		//cout << b << ":";
+		//mPopulation[1].print();
+		//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 	}
 
 	void caculte()//TODO:give a new name
@@ -536,6 +543,7 @@ public:
 			evolve();
 			CaculteScore();
 			mGeneration++;
+			print();
 		}
 	}
 };
@@ -569,16 +577,17 @@ int main()
         }
     }
 
-	GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GeneticAlgorithm GA(50, 10, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GA.caculte();
 	//GeneticAlgorithm GA(8, 1, 10, 0, 0, CustomerDis, customer, capacity);
-	GA.CaculteScore();
+	//GA.CaculteScore();
 	//cout << "0:";
 	//GA.GetPopulation()[0].print();
 	//cout << endl << "1:";
 	//GA.GetPopulation()[1].print();
 	//cout << endl;
 	//GA.Roulette();
-	GA.evolve();
+	//GA.evolve();
 	//GA.CaculteScore();
 	//cout << "0:";
 	//GA.GetPopulation()[0].print();
