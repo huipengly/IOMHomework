@@ -195,6 +195,7 @@ public:
       //  int size = chro.GetSize();
 		//cout << "chro:" << mCustomer << endl;
         int sumDemand = 0;
+		mSumDis = 0;
         if(mGene != NULL)
         {
             for(int i = 0; i < mSize; i++)
@@ -332,41 +333,112 @@ public:
 	void evolve()//TODO:保留最优子代
 	{
 		Chromosome *mChildPopulation = new Chromosome[mNP];
+		//Chromosome chro1, chro2;
 		Roulette();
 		int *c1, *c2;
 		for (int i = 0; i < mNP/2; i++)//生成子代，部分映射交叉
 		{
+			//TODO：改成轮盘赌取
+			//chro1 = mPopulation[i];
+			//chro2 = mPopulation[i+1];
+			c1 = mPopulation[i].GetGene();
+			c2 = mPopulation[i + 1].GetGene();
 			//交换30-40，按30-40的规律改变其他 TODO:改成随机
-			for (int j = 30; j < 40; j++)//交换部分基因段
-			{//TODO：改成轮盘赌取
-				c1 = mPopulation[i].GetGene();
-				c2 = mPopulation[i].GetGene();
+			//for (int j = 30; j < 40; j++)//交换部分基因段
+			//{
+			//	swap(c1[j], c2[j]);
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 30)
+			//	{
+			//		k = 40;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 30; l < 40; l++)
+			//		{
+			//			if (c1[k] == c1[l])
+			//			{
+			//				c1[k] = c2[k];
+			//			}
+			//			else if (c1[k] == c2[l])
+			//			{
+			//				c1[k] = c1[l];
+			//			}
+			//		}
+			//	}
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 30)
+			//	{
+			//		k = 40;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 30; l < 40; l++)
+			//		{
+			//			if (c2[k] == c1[l])
+			//			{
+			//				c2[k] = c2[k];
+			//			}
+			//			else if (c2[k] == c2[l])
+			//			{
+			//				c2[k] = c1[l];
+			//			}
+			//		}
+			//	}
+			//}
+			for (int j = 3; j < 6; j++)//交换部分基因段
+			{
 				swap(c1[j], c2[j]);
 			}
-			for (int k = 0; k < mGeneSize; k++)//其他基因段根据交叉段改变
+			for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
 			{
-				if (k == 30)
+				if (k == 3)
 				{
-					k = 40;
+					k = 5;
 				}
 				else
 				{
-					for (int l = 30; l < 40; l++)
+					for (int l = 3; l < 6; l++)
 					{
 						if (c1[k] == c1[l])
 						{
-							c1[k] = c2[k];
+							c1[k] = c2[l];
 						}
-						else if (c1[k] == c2[l])
+						/*else if (c1[k] == c2[l])
 						{
 							c1[k] = c1[l];
+						}*/
+					}
+				}
+			}
+			for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
+			{
+				if (k == 3)
+				{
+					k = 5;
+				}
+				else
+				{
+					for (int l = 3; l < 6; l++)
+					{
+						/*if (c2[k] == c1[l])
+						{
+							c2[k] = c2[k];
+						}
+						else */if (c2[k] == c2[l])
+						{
+							c2[k] = c1[l];
 						}
 					}
 				}
 			}
 		}
-		delete[] mPopulation;
-		mPopulation = mChildPopulation;//新子代取代上一代
+		//delete[] mPopulation;TODO:确定是否内存泄漏
+		//mPopulation = mChildPopulation;//新子代取代上一代
 	}
 
 
@@ -401,14 +473,22 @@ int main()
         }
     }
 
-	GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	//GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GeneticAlgorithm GA(2, 1, 10, 0, 0, CustomerDis, customer, capacity);
 	GA.CaculteScore();
 	cout << "0:";
 	GA.GetPopulation()[0].print();
 	cout << endl << "1:";
 	GA.GetPopulation()[1].print();
 	cout << endl;
-	GA.Roulette();
+	//GA.Roulette();
+	GA.evolve();
+	GA.CaculteScore();
+	cout << "0:";
+	GA.GetPopulation()[0].print();
+	cout << endl << "1:";
+	GA.GetPopulation()[1].print();
+	cout << endl;
 
 	//Chromosome chro(3-1, CustomerDis, customer, capacity);
 	////int *a = chro.GetGene();
