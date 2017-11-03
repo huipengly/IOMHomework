@@ -397,57 +397,19 @@ public:
 			c1 = mChildPopulation[i].GetGene();
 			c2 = mChildPopulation[i + 1].GetGene();
 			//交换30-40，按30-40的规律改变其他 TODO:改成随机
-			//for (int j = 30; j < 40; j++)//交换部分基因段
-			//{
-			//	swap(c1[j], c2[j]);
-			//}
-			//for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
-			//{
-			//	if (k == 30)
-			//	{
-			//		k = 39;
-			//	}
-			//	else
-			//	{
-			//		for (int l = 30; l < 40; l++)
-			//		{
-			//			if (c1[k] == c1[l])
-			//			{
-			//				c1[k] = c2[l];
-			//			}
-			//		}
-			//	}
-			//}
-			//for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
-			//{
-			//	if (k == 30)
-			//	{
-			//		k = 39;
-			//	}
-			//	else
-			//	{
-			//		for (int l = 30; l < 40; l++)
-			//		{
-			//			if (c2[k] == c2[l])
-			//			{
-			//				c2[k] = c1[l];
-			//			}
-			//		}
-			//	}
-			//}
-			for (int j = 3; j < 6; j++)//交换部分基因段
+			for (int j = 30; j < 40; j++)//交换部分基因段
 			{
 				swap(c1[j], c2[j]);
 			}
 			for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
 			{
-				if (k == 3)
+				if (k == 30)
 				{
-					k = 5;
+					k = 39;
 				}
 				else
 				{
-					for (int l = 3; l < 6; l++)
+					for (int l = 30; l < 40; l++)
 					{
 						if (c1[k] == c1[l])
 						{
@@ -458,13 +420,13 @@ public:
 			}
 			for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
 			{
-				if (k == 3)
+				if (k == 30)
 				{
-					k = 5;
+					k = 39;
 				}
 				else
 				{
-					for (int l = 3; l < 6; l++)
+					for (int l = 30; l < 40; l++)
 					{
 						if (c2[k] == c2[l])
 						{
@@ -473,6 +435,44 @@ public:
 					}
 				}
 			}
+			//for (int j = 3; j < 6; j++)//交换部分基因段
+			//{
+			//	swap(c1[j], c2[j]);
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 3)
+			//	{
+			//		k = 5;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 3; l < 6; l++)
+			//		{
+			//			if (c1[k] == c1[l])
+			//			{
+			//				c1[k] = c2[l];
+			//			}
+			//		}
+			//	}
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 3)
+			//	{
+			//		k = 5;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 3; l < 6; l++)
+			//		{
+			//			if (c2[k] == c2[l])
+			//			{
+			//				c2[k] = c1[l];
+			//			}
+			//		}
+			//	}
+			//}
 			if (aa)
 			{
 				a = rand1;
@@ -493,13 +493,13 @@ public:
 				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 			}
 
-			cout << "c in pop" << endl;
-			cout << "i = " << i << endl;
-			cout << a << ":";
-			mChildPopulation[0].print();
-			cout << b << ":";
-			mChildPopulation[1].print();
-			cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+			//cout << "c in pop" << endl;
+			//cout << "i = " << i << endl;
+			//cout << a << ":";
+			//mChildPopulation[0].print();
+			//cout << b << ":";
+			//mChildPopulation[1].print();
+			//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 		}
 
 		cout << "c out pop" << endl;
@@ -509,20 +509,7 @@ public:
 		mChildPopulation[1].print();
 		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 
-	//	delete[] mPopulation;//TODO:确定是否内存泄漏
-		//mPopulation = mChildPopulation;//新子代取代上一代
-
-		/*cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;
-		cout << "mPopulation:" << mPopulation << endl;
-		cout << "mChildPopulation" << mChildPopulation << endl;
-		cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;*/
-		//cout << "old pop" << endl;
-		//cout << a << ":";
-		//mPopulation[a].print();
-		//cout << b << ":";
-		//mPopulation[b].print();
-		//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-
+		//TODO:研究可否直接用地址赋值
 		for (int i = 0; i < mNP; i++)
 		{
 			mPopulation[i] = mChildPopulation[i];
@@ -582,8 +569,8 @@ int main()
         }
     }
 
-	//GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
-	GeneticAlgorithm GA(8, 1, 10, 0, 0, CustomerDis, customer, capacity);
+	GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	//GeneticAlgorithm GA(8, 1, 10, 0, 0, CustomerDis, customer, capacity);
 	GA.CaculteScore();
 	//cout << "0:";
 	//GA.GetPopulation()[0].print();
