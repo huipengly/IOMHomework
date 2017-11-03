@@ -71,7 +71,7 @@ protected:
     int mCapacity;
 
 public:
-	Chromosome(int size, double **customerDis, Customer *customer, int capacity) : mScore(0), mCarNum(0), mSumDis(0), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
+	Chromosome(int size, double **customerDis, Customer *customer, int capacity) : mScore(0), mCarNum(0), mSumDis(0), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity), mGene(NULL), mPlan(NULL)
     {
         mSize = size;
         if(mSize >= 0)
@@ -86,8 +86,8 @@ public:
         }
     }
 
-	Chromosome() : mScore(0), mCarNum(0), mSumDis(0), mGene(NULL)
-    {
+	Chromosome() : mScore(0), mCarNum(0), mSumDis(0), mGene(NULL), mPlan(NULL), mCustomerDis(NULL), mCustomer(NULL)
+	{
 
     }
 
@@ -104,22 +104,22 @@ public:
 			cout << mGene[i] + 1 << " ";
 		}
 		cout << endl;
-		cout << "NO.1 Car's Customer : ";
-		for (int i(0), j(0); j < mSize; j++)
-		{
-			if (mPlan[i] == j)
-			{
-				//cout << "| ";
-				cout << endl;
-				cout << "NO." << i + 1 << " Car's Customer : ";
-				i++;
-			}
-			cout << mGene[j] + 1 << " ";
-		}
-		cout << endl;
-        cout << "mSize = " << mSize << endl;
-        cout << "mCarNum = " << mCarNum << endl;
-        cout << "mSumDis = " << mSumDis << endl;
+		//cout << "NO.1 Car's Customer : ";
+		//for (int i(0), j(0); j < mSize; j++)
+		//{
+		//	if (mPlan[i] == j)
+		//	{
+		//		//cout << "| ";
+		//		cout << endl;
+		//		cout << "NO." << i + 1 << " Car's Customer : ";
+		//		i++;
+		//	}
+		//	cout << mGene[j] + 1 << " ";
+		//}
+		//cout << endl;
+  //      cout << "mSize = " << mSize << endl;
+  //      cout << "mCarNum = " << mCarNum << endl;
+  //      cout << "mSumDis = " << mSumDis << endl;
     }
 
     int *GetGene()
@@ -160,7 +160,19 @@ public:
 		mCapacity = obj.mCapacity;
         mScore = obj.mScore;
         mSize = obj.mSize;
-		mPlan = obj.mPlan;
+		//mPlan = obj.mPlan;
+
+		if (mPlan != NULL)
+		{
+			delete[] mPlan;
+		}
+
+		mPlan = new int[mSize];
+		for (int i = 0; i < mCarNum; i++)
+		{
+			mPlan[i] = obj.mPlan[i];
+		}
+
         
 		if (mGene != NULL)
 		{
@@ -253,7 +265,7 @@ protected:
 public:
     GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
         : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
-        , xi(rand()/static_cast<double>(RAND_MAX))
+		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL)
     {
         mPopulation = new Chromosome[mNP];
         for(int i = 0; i < mNP; i++)
@@ -344,7 +356,7 @@ public:
 		//Chromosome chro1, chro2;
 		Roulette();
 		int *c1, *c2;
-		for (int i = 0; i < mNP/2; i++)//生成子代，部分映射交叉
+		for (int i = 0; i < mNP; i += 2)//生成子代，部分映射交叉
 		{
 			//TODO：改成轮盘赌取
 			//chro1 = mPopulation[i];
@@ -378,22 +390,64 @@ public:
 					}
 				}
 			}
-			c1 = mChildPopulation[rand1].GetGene();
-			c2 = mChildPopulation[rand2].GetGene();
+			//rand1 = 0;
+			//rand2 = 1;
+			mChildPopulation[i] = mPopulation[rand1];
+			mChildPopulation[i + 1] = mPopulation[rand2];
+			c1 = mChildPopulation[i].GetGene();
+			c2 = mChildPopulation[i + 1].GetGene();
 			//交换30-40，按30-40的规律改变其他 TODO:改成随机
-			for (int j = 30; j < 40; j++)//交换部分基因段
+			//for (int j = 30; j < 40; j++)//交换部分基因段
+			//{
+			//	swap(c1[j], c2[j]);
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 30)
+			//	{
+			//		k = 39;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 30; l < 40; l++)
+			//		{
+			//			if (c1[k] == c1[l])
+			//			{
+			//				c1[k] = c2[l];
+			//			}
+			//		}
+			//	}
+			//}
+			//for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
+			//{
+			//	if (k == 30)
+			//	{
+			//		k = 39;
+			//	}
+			//	else
+			//	{
+			//		for (int l = 30; l < 40; l++)
+			//		{
+			//			if (c2[k] == c2[l])
+			//			{
+			//				c2[k] = c1[l];
+			//			}
+			//		}
+			//	}
+			//}
+			for (int j = 3; j < 6; j++)//交换部分基因段
 			{
 				swap(c1[j], c2[j]);
 			}
 			for (int k = 0; k < mGeneSize; k++)//c1基因其他基因段根据交叉段改变
 			{
-				if (k == 30)
+				if (k == 3)
 				{
-					k = 39;
+					k = 5;
 				}
 				else
 				{
-					for (int l = 30; l < 40; l++)
+					for (int l = 3; l < 6; l++)
 					{
 						if (c1[k] == c1[l])
 						{
@@ -404,13 +458,13 @@ public:
 			}
 			for (int k = 0; k < mGeneSize; k++)//c2基因其他基因段根据交叉段改变
 			{
-				if (k == 30)
+				if (k == 3)
 				{
-					k = 39;
+					k = 5;
 				}
 				else
 				{
-					for (int l = 30; l < 40; l++)
+					for (int l = 3; l < 6; l++)
 					{
 						if (c2[k] == c2[l])
 						{
@@ -424,19 +478,37 @@ public:
 				a = rand1;
 				b = rand2;
 				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-				cout << a << ":";
-				mPopulation[a].print();
-				cout << b << ":";
-				mPopulation[b].print();
+				cout << "old pop" << endl;
+				cout << rand1 << ":";
+				mPopulation[rand1].print();
+				cout << rand2 << ":";
+				mPopulation[rand2].print();
 				aa = false;
 				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
-				cout << rand1 << ":";
-				mChildPopulation[rand1].print();
-				cout << rand2 << ":";
-				mChildPopulation[rand2].print();
+				cout << "c in pop" << endl;
+				cout << a << ":";
+				mChildPopulation[0].print();
+				cout << b << ":";
+				mChildPopulation[1].print();
 				cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 			}
+
+			cout << "c in pop" << endl;
+			cout << "i = " << i << endl;
+			cout << a << ":";
+			mChildPopulation[0].print();
+			cout << b << ":";
+			mChildPopulation[1].print();
+			cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 		}
+
+		cout << "c out pop" << endl;
+		cout << a << ":";
+		mChildPopulation[0].print();
+		cout << b << ":";
+		mChildPopulation[1].print();
+		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
+
 	//	delete[] mPopulation;//TODO:确定是否内存泄漏
 		//mPopulation = mChildPopulation;//新子代取代上一代
 
@@ -444,20 +516,31 @@ public:
 		cout << "mPopulation:" << mPopulation << endl;
 		cout << "mChildPopulation" << mChildPopulation << endl;
 		cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << endl;*/
+		//cout << "old pop" << endl;
+		//cout << a << ":";
+		//mPopulation[a].print();
+		//cout << b << ":";
+		//mPopulation[b].print();
+		//cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 
 		for (int i = 0; i < mNP; i++)
 		{
 			mPopulation[i] = mChildPopulation[i];
 		}
+		//mPopulation[a] = mChildPopulation[a];
+		//mPopulation[b] = mChildPopulation[b];
 		//TODO:	新生成的子种群无法赋值给种群，假设已经生成
+
+		//CaculteScore();
+		cout << "new pop" << endl;
 		cout << a << ":";
-		mPopulation[a].print();
+		mPopulation[0].print();
 		cout << b << ":";
-		mPopulation[b].print();
+		mPopulation[1].print();
 		cout << "~~~~~~~~~~~~~~~~~~~~~" << endl;
 	}
 
-	void caculte()
+	void caculte()//TODO:give a new name
 	{
 		mGeneration = 1;
 		CaculteScore();
@@ -499,22 +582,22 @@ int main()
         }
     }
 
-	GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
-	//GeneticAlgorithm GA(2, 1, 10, 0, 0, CustomerDis, customer, capacity);
+	//GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GeneticAlgorithm GA(8, 1, 10, 0, 0, CustomerDis, customer, capacity);
 	GA.CaculteScore();
-	cout << "0:";
-	GA.GetPopulation()[0].print();
-	cout << endl << "1:";
-	GA.GetPopulation()[1].print();
-	cout << endl;
+	//cout << "0:";
+	//GA.GetPopulation()[0].print();
+	//cout << endl << "1:";
+	//GA.GetPopulation()[1].print();
+	//cout << endl;
 	//GA.Roulette();
 	GA.evolve();
-	GA.CaculteScore();
-	cout << "0:";
-	GA.GetPopulation()[0].print();
-	cout << endl << "1:";
-	GA.GetPopulation()[1].print();
-	cout << endl;
+	//GA.CaculteScore();
+	//cout << "0:";
+	//GA.GetPopulation()[0].print();
+	//cout << endl << "1:";
+	//GA.GetPopulation()[1].print();
+	//cout << endl;
 
 	//Chromosome chro(3-1, CustomerDis, customer, capacity);
 	////int *a = chro.GetGene();
