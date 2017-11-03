@@ -82,12 +82,11 @@ public:
             {
                 mGene[i] = i + 1;
             }
-            srand(time(0));
             random_shuffle(mGene, mGene+mSize);
         }
     }
 
-    Chromosome() : mScore(0), mCarNum(0), mSumDis(0)
+	Chromosome() : mScore(0), mCarNum(0), mSumDis(0), mGene(NULL)
     {
 
     }
@@ -132,6 +131,11 @@ public:
     {
         return mScore;
     }
+
+	double GetDistance()
+	{
+		return mSumDis;
+	}
     
     void SetScore(double score)
     {
@@ -145,10 +149,18 @@ public:
 
     Chromosome &operator=(const Chromosome &obj)//克隆
     {
+		//mCustomerDis, mCustomer, mCapacity)
+		mCustomerDis = obj.mCustomerDis;
+		mCustomer = obj.mCustomer;
+		mCapacity = obj.mCapacity;
         mScore = obj.mScore;
         mSize = obj.mSize;
+		mPlan = obj.mPlan;
         
-        delete[] mGene;
+		if (mGene != NULL)
+		{
+			delete[] mGene;
+		}
         mGene = new int[mSize];
 
         for(int i = 0; i < mSize; i++)
@@ -176,6 +188,7 @@ public:
     {
       //  int *gene = chro.GetGene();
       //  int size = chro.GetSize();
+		//cout << "chro:" << mCustomer << endl;
         int sumDemand = 0;
         if(mGene != NULL)
         {
@@ -223,17 +236,29 @@ protected:
 	double **mCustomerDis;
 	Customer *mCustomer;
 	int mCapacity;
+    double maxdis;
+    double TotleScore;
+    double MaxScore;
+    int maxGene;
+    double xi;//ξ
+    double *wheel;
 
 public:
     GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
-		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
+        : mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mGeneration(1), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
+        , xi(rand()/static_cast<double>(RAND_MAX))
     {
         mPopulation = new Chromosome[mNP];
         for(int i = 0; i < mNP; i++)
-        {
+		{
+			//srand(time(0));
            // Chromosome *tmp = new Chromosome(mGeneSize);
 			mPopulation[i] = *(new Chromosome(mGeneSize, mCustomerDis, mCustomer, mCapacity));
         }
+
+		//cout << "GA:" << mCustomer << endl;
+
+        wheel = new double[mNP];
     }
 
     ~GeneticAlgorithm()
@@ -251,9 +276,51 @@ public:
         cout << mPopulation << endl;
     }
 
-    //计算种群得分
+    //计算种群得分TODO:
     void CaculteScore()
     {
+        maxdis = 0;
+        maxGene = 0;
+        TotleScore = 0;
+
+		for (int i = 0; i < mNP; i++)
+		{
+			mPopulation[i].CalculateDistance();
+			if (maxdis < mPopulation[i].GetDistance())
+			{
+                maxGene = i;
+				maxdis = mPopulation[i].GetDistance();
+			}
+		}
+
+		for (int i = 0; i < mNP; i++)
+		{
+			mPopulation[i].SetScore(maxdis - mPopulation[i].GetDistance() + xi);
+        }
+        
+		for (int i = 0; i < mNP; i++)
+		{
+			TotleScore += mPopulation[i].GetScore();
+        }
+
+    }
+
+	void Roulette()
+    {
+        //构造轮盘
+        for (int i = 0; i < mNP; i++)
+        {
+            if (i == 0)
+            {
+				wheel[i] = mPopulation[i].GetScore() / TotleScore;
+            }
+            else
+            {
+				wheel[i] = mPopulation[i].GetScore() / TotleScore + wheel[i - 1];
+            }
+        }
+
+        //产生子代TODO:
 
     }
 
@@ -265,7 +332,8 @@ int main()
     //读数据
     int dimension = 51;
     int capacity = 160;
-    Customer *customer = new Customer[dimension];
+	Customer *customer = new Customer[dimension];
+	srand(time(0));
     for(int i = 0; i < dimension; i++)
     {
         customer[i].SetX(CustomerNode[i][1]);
@@ -273,6 +341,7 @@ int main()
         customer[i].SetNum(i);
         customer[i].SetDemand(CustomerDemand[i][1]);
     }
+	//cout << "main:" << customer << endl;
     double **CustomerDis = new double*[dimension];//客户到客户间的距离
     for(int i = 0; i < dimension; i++)
     {
@@ -287,14 +356,23 @@ int main()
         }
     }
 
-	Chromosome chro(3-1, CustomerDis, customer, capacity);
-	//int *a = chro.GetGene();
-	//for (int i = 0; i < chro.GetSize(); i++)
-	//{
-	//	cout << "a[" << i << "]= " << a[i] << endl;
-	//}
-    chro.CalculateDistance();
-    chro.print();
+	GeneticAlgorithm GA(50, 1, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GA.CaculteScore();
+	cout << "0:";
+	GA.GetPopulation()[0].print();
+	cout << endl << "1:";
+	GA.GetPopulation()[1].print();
+	cout << endl;
+	GA.Roulette();
+
+	//Chromosome chro(3-1, CustomerDis, customer, capacity);
+	////int *a = chro.GetGene();
+	////for (int i = 0; i < chro.GetSize(); i++)
+	////{
+	////	cout << "a[" << i << "]= " << a[i] << endl;
+	////}
+ //   chro.CalculateDistance();
+ //   chro.print();
 
     
      //for(int i = 0; i < dimension; i++)
