@@ -99,27 +99,27 @@ public:
 
     void print()
 	{
-		for (int i = 0; i < mSize; i++)
+		/*for (int i = 0; i < mSize; i++)
 		{
 			cout << mGene[i] + 1 << " ";
+		}*/
+		//cout << endl;
+		cout << "NO.1 Car's Customer : ";
+		for (int i(0), j(0); j < mSize; j++)
+		{
+			if (mPlan[i] == j)
+			{
+				//cout << "| ";
+				cout << endl;
+				cout << "NO." << i + 2 << " Car's Customer : ";
+				i++;
+			}
+			cout << mGene[j] + 1 << " ";
 		}
 		cout << endl;
-		//cout << "NO.1 Car's Customer : ";
-		//for (int i(0), j(0); j < mSize; j++)
-		//{
-		//	if (mPlan[i] == j)
-		//	{
-		//		//cout << "| ";
-		//		cout << endl;
-		//		cout << "NO." << i + 1 << " Car's Customer : ";
-		//		i++;
-		//	}
-		//	cout << mGene[j] + 1 << " ";
-		//}
-		//cout << endl;
-  //      cout << "mSize = " << mSize << endl;
-  //      cout << "mCarNum = " << mCarNum << endl;
-  //      cout << "mSumDis = " << mSumDis << endl;
+        cout << "mSize = " << mSize << endl;
+        cout << "mCarNum = " << mCarNum + 1 << endl;
+        cout << "mSumDis = " << mSumDis << endl;
     }
 
     int *GetGene()
@@ -155,11 +155,13 @@ public:
     Chromosome &operator=(const Chromosome &obj)//克隆
     {
 		//mCustomerDis, mCustomer, mCapacity)
+        mScore = obj.mScore;
+        mSize = obj.mSize;
+		mCarNum = obj.mCarNum;
+		mSumDis = obj.mSumDis;
 		mCustomerDis = obj.mCustomerDis;
 		mCustomer = obj.mCustomer;
 		mCapacity = obj.mCapacity;
-        mScore = obj.mScore;
-        mSize = obj.mSize;
 		//mPlan = obj.mPlan;
 
 		if (mPlan == NULL)
@@ -208,6 +210,7 @@ public:
 		//cout << "chro:" << mCustomer << endl;
         int sumDemand = 0;
 		mSumDis = 0;
+		mCarNum = 0;
         if(mGene != NULL)
         {
             for(int i = 0; i < mSize; i++)
@@ -246,6 +249,7 @@ class GeneticAlgorithm
 protected:
     Chromosome *mPopulation; //种群
 	Chromosome *mChildPopulation;
+	Chromosome bestChro;
     int mNP;                //种群个数
     int mNG;                //最大进化代数
     int mGeneSize;          //基因长度，定长
@@ -260,13 +264,14 @@ protected:
     double MaxScore;
 	double MinDis;
     int maxGene;
+	int minGene;
     double xi;//ξ
     double *wheel;
 
 public:
 	GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
 		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
-		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), MinDis(1e10)
+		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), bestChro(50, customerDis, customer, 160), MinDis(1e10)
 	{
 		mChildPopulation = new Chromosome[mNP];
         mPopulation = new Chromosome[mNP];
@@ -280,6 +285,7 @@ public:
 		//cout << "GA:" << mCustomer << endl;
 
         wheel = new double[mNP];
+		bestChro.CalculateDistance();
     }
 
     ~GeneticAlgorithm()
@@ -294,9 +300,22 @@ public:
 
     void print()
     {
-        //cout << mPopulation << endl;
-		cout << "minDis " << MinDis << endl;
-		cout << "maxdis " << maxdis << endl;
+  //      //cout << mPopulation << endl;
+		////cout << "bestChro.GetDistance() " << bestChro.GetDistance() << endl;
+		cout << "Generation : " << mGeneration << endl;
+		//cout << "bestChro Info" << endl;
+		//bestChro.print();
+		////cout << "bestGene : ";
+		////int *printint = bestChro.GetGene();
+		////for (int i = 0; i < mGeneSize; i++)
+		////{
+		////	cout << printint[i] << " ";
+		////}
+		////cout << endl;
+
+		cout << "This Generation Info" << endl;
+		cout << "minDis in all Generation : " << MinDis << endl;
+		cout << "maxdis in this Generation : " << maxdis << endl << endl;
     }
 
     //计算种群得分TODO:
@@ -316,7 +335,9 @@ public:
 			}
 			if (MinDis > mPopulation[i].GetDistance())
 			{
+				minGene = i;
 				MinDis = mPopulation[i].GetDistance();
+				//bestChro = mPopulation[i];
 			}
 		}
 
@@ -541,6 +562,7 @@ public:
 	{
 		mGeneration = 1;
 		CaculteScore();
+		print();
 		while (mGeneration < mNG)
 		{
 			evolve();
