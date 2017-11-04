@@ -5,7 +5,7 @@ double *aa;
 aa = new double[size];
 double score[];
 
-//¹¹ÔìÂÖÅÌ
+//æ„é€ è½®ç›˜
 for (int i = 0; i < size; i++)
 {
 	if (i == 0)
@@ -18,11 +18,11 @@ for (int i = 0; i < size; i++)
 	}
 }
 
-//²úÉú
+//äº§ç”Ÿ
 srand(time(0));
 double rand[2];
 rand[0] = rand();
-rand[1] = rand();//TODO:ÑéÖ¤Á½¸örandÒ»Ñù²»
+rand[1] = rand();//TODO:éªŒè¯ä¸¤ä¸ªrandä¸€æ ·ä¸
 int parent[2];
 for (int i = 0; i < 2; i++)
 {

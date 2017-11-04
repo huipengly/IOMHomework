@@ -271,7 +271,7 @@ protected:
 public:
 	GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
 		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
-		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), bestChro(50, customerDis, customer, 160), MinDis(1e10)
+		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), bestChro(50, customerDis, customer, 160), MinDis(1e4)
 	{
 		mChildPopulation = new Chromosome[mNP];
         mPopulation = new Chromosome[mNP];
@@ -374,8 +374,8 @@ public:
 
 	void evolve()//TODO:保留最优子代
 	{
-		int a, b;
-		bool aa = true;
+//		int a, b;
+//		bool aa = true;
 		//mChildPopulation = new Chromosome[mNP];
 		//TODO:一坨染色体复制
 		for (int i = 0; i < mNP; i++)
