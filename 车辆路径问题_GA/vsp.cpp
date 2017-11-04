@@ -162,23 +162,23 @@ public:
         mSize = obj.mSize;
 		//mPlan = obj.mPlan;
 
-		if (mPlan != NULL)
+		if (mPlan == NULL)
 		{
-			delete[] mPlan;
+			//delete[] mPlan;
+			mPlan = new int[mSize];
 		}
 
-		mPlan = new int[mSize];
 		for (int i = 0; i < mCarNum; i++)
 		{
 			mPlan[i] = obj.mPlan[i];
 		}
 
         
-		if (mGene != NULL)
+		if (mGene == NULL)
 		{
-			delete[] mGene;
+			//delete[] mGene;
+			mGene = new int[mSize];
 		}
-        mGene = new int[mSize];
 
         for(int i = 0; i < mSize; i++)
         {
@@ -267,7 +267,8 @@ public:
 	GeneticAlgorithm(int NP, int NG, int GeneSize, int PM, int PC, double **customerDis, Customer *customer, int capacity)
 		: mNP(NP), mNG(NG), mGeneSize(GeneSize), mPM(PM), mPC(PC), mCustomerDis(customerDis), mCustomer(customer), mCapacity(capacity)
 		, xi(rand() / static_cast<double>(RAND_MAX)), mPopulation(NULL), mChildPopulation(NULL), wheel(NULL), MinDis(1e10)
-    {
+	{
+		mChildPopulation = new Chromosome[mNP];
         mPopulation = new Chromosome[mNP];
         for(int i = 0; i < mNP; i++)
 		{
@@ -283,7 +284,7 @@ public:
 
     ~GeneticAlgorithm()
     {
-        delete[] mPopulation;
+//        delete[] mPopulation;
     }
 
     Chromosome *GetPopulation()
@@ -294,7 +295,8 @@ public:
     void print()
     {
         //cout << mPopulation << endl;
-		cout << "minDis" << MinDis << endl;
+		cout << "minDis " << MinDis << endl;
+		cout << "maxdis " << maxdis << endl;
     }
 
     //计算种群得分TODO:
@@ -353,7 +355,7 @@ public:
 	{
 		int a, b;
 		bool aa = true;
-		mChildPopulation = new Chromosome[mNP];
+		//mChildPopulation = new Chromosome[mNP];
 		//TODO:一坨染色体复制
 		for (int i = 0; i < mNP; i++)
 		{
@@ -370,29 +372,29 @@ public:
 			double randval1 = rand() / static_cast<double>(RAND_MAX);
 			double randval2 = rand() / static_cast<double>(RAND_MAX);
 			int rand1, rand2;
-			for (int i = 0; i < mGeneSize; i++)
+			for (int j = 0; j < mGeneSize; j++)
 			{
-				if (i == 0)
+				if (j == 0)
 				{
-					if (wheel[i] > randval1)
+					if (wheel[j] > randval1)
 					{
-						rand1 = i;
+						rand1 = j;
 					}
 
-					if (wheel[i] > randval2)
+					if (wheel[j] > randval2)
 					{
-						rand2 = i;
+						rand2 = j;
 					}
 				}
 				else
 				{
-					if ((wheel[i-1] < randval1) && (wheel[i] > randval1))
+					if ((wheel[j-1] < randval1) && (wheel[j] > randval1))
 					{
-						rand1 = i;
+						rand1 = j;
 					}
-					if ((wheel[i - 1] < randval2) && (wheel[i] > randval2))
+					if ((wheel[j - 1] < randval2) && (wheel[j] > randval2))
 					{
-						rand2 = i;
+						rand2 = j;
 					}
 				}
 			}
@@ -521,6 +523,7 @@ public:
 		{
 			mPopulation[i] = mChildPopulation[i];
 		}
+		//mPopulation = mChildPopulation;
 		//mPopulation[a] = mChildPopulation[a];
 		//mPopulation[b] = mChildPopulation[b];
 		//TODO:	新生成的子种群无法赋值给种群，假设已经生成
@@ -577,7 +580,7 @@ int main()
         }
     }
 
-	GeneticAlgorithm GA(50, 10, dimension - 1, 0, 0, CustomerDis, customer, capacity);
+	GeneticAlgorithm GA(50, 100, dimension - 1, 0, 0, CustomerDis, customer, capacity);
 	GA.caculte();
 	//GeneticAlgorithm GA(8, 1, 10, 0, 0, CustomerDis, customer, capacity);
 	//GA.CaculteScore();
