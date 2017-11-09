@@ -4,7 +4,7 @@
 class Particle
 {
 protected:
-    int n;          //维数
+    int d;          //维数
     //TODO:试试用智能指针写
     double *x;      //粒子位置
     double *v;      //粒子速度
