@@ -21,8 +21,11 @@ int main()
     // PSO pso(2, 3, -30, 30);
     // pso.print();
 
-    PSO pso(10, 2, -30, 30, 10);
+    PSO pso(1000, 50, -30, 30, 1000);
     pso.run();
+
+	cout << "press any key to kill me..." << endl;
+	getchar();
 
     return 0;
 }

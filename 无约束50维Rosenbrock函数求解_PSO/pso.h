@@ -26,7 +26,7 @@ public:
     void move();            //粒子移动
     double UpdateValue();   //更新粒子值
     void UpdateSpeed(double *bestpx);
-    double* getx();
+    double *getx();
 };
 
 class PSO
@@ -45,7 +45,7 @@ protected:
 public:
     PSO(int nsize, int dsize, int min, int max, int gen);
     ~PSO();
-    void print();
+    void print(int i);
     void findbest();
     void SwarmMove();
     void SwarmUpdateSpeed();
