@@ -50,9 +50,9 @@ void Particle::init(int dsize, double min, double max)
     xmax = max;
     vmax = xmax - xmin;
     vmin = -vmax;
-    c1 = 0.75;
-    c2 = 0.75;
-    omega = 1;
+    c1 = 2.05;
+    c2 = 2.05;
+    omega = 0.01;
     for(int i = 0; i < d; i++)
     {
         x[i] = xmin + ((xmax - xmin) * (rand() / static_cast<double>(RAND_MAX)));
@@ -97,7 +97,7 @@ double Particle::UpdateValue()
     return value;
 }
 
-void Particle::UpdateSpeed(double *bestpx)
+void Particle::UpdateSpeed(double *bestpx, double omega)
 {
     for(int i = 0; i < d; i++)
     {
@@ -112,15 +112,16 @@ double* Particle::getx()
     return x;
 }
 
-PSO::PSO(int nsize, int dsize, int min, int max, int gen)
+PSO::PSO(int nsize, int dsize, int min, int max, int maxgen)
 {
     n = nsize;
     this->dsize = dsize;
     this->min = min;
     this->max = max;
-    this->gen = gen;
-    p = new Particle[n];
-	bestpx = new double[n];
+    this->maxgen = maxgen;
+	gen = 0;
+    p = new Particle[nsize];
+	bestpx = new double[dsize];
 
     for(int i = 0; i < n; i++)
     {
@@ -184,7 +185,8 @@ void PSO::SwarmUpdateSpeed()
 {
     for(int i = 0; i < n; i++)
     {
-        p[i].UpdateSpeed(bestpx);
+		//p[i].UpdateSpeed(bestpx, 1 - (0.99 * gen)/maxgen);//TODO:添加变omega
+		p[i].UpdateSpeed(bestpx, 0.5);
     }
 }
 
@@ -206,12 +208,12 @@ void PSO::run()
 	findbest();
     SwarmMove();
     findbest();
-    for(int i = 0; i < gen; i++)
+    for(int gen = 0; gen < maxgen; gen++)
     {
         SwarmUpdateSpeed();
         SwarmMove();
         findbest();
-        print(i);
+        print(gen);
     }
 
     cout << "final result is:" << endl;

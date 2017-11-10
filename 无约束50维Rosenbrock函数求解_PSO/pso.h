@@ -25,7 +25,7 @@ public:
     void init(int dsize, double min, double max);//初始化粒子，dsize是维数
     void move();            //粒子移动
     double UpdateValue();   //更新粒子值
-    void UpdateSpeed(double *bestpx);
+	void UpdateSpeed(double *bestpx, double omega);
     double *getx();
 };
 
@@ -36,6 +36,7 @@ protected:
     Particle *p;    //粒子群
     double *bestpx; //最优粒子
     double bestpvalue;
+	int maxgen;
     int gen;
 
     int dsize;      //粒子维数

@@ -1,29 +1,26 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>
+#include <chrono>
 #include "Rosenbrock.h"
 #include "pso.h"
 
 using namespace std;
+using namespace chrono;
 
 int main()
 {
     srand(time(0));
 
-    // Particle p1;
-    // p1.init(3, -30, 30);
-    // p1.UpdateValue();
-    // p1.print();
-    // p1.move();
-    // p1.UpdateValue();
-    // p1.print();
+	auto start = system_clock::now();
 
-    // PSO pso(2, 3, -30, 30);
-    // pso.print();
-
-    PSO pso(1000, 50, -30, 30, 1000);
+    PSO pso(40, 50, -30, 30, 1000);
     pso.run();
 
+	auto end = system_clock::now();
+	auto duration = duration_cast<microseconds>(end - start);
+	cout << "»¨·ÑÁË"
+		<< double(duration.count()) * microseconds::period::num / microseconds::period::den << "Ãë" << endl;
 	cout << "press any key to kill me..." << endl;
 	getchar();
 
