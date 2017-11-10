@@ -161,7 +161,7 @@ void PSO::findbest()
         if(bestpvalue > value)
         {
             //copy(tmpx, tmpx + dsize, bestpx);
-            for(int j = 0; j < n; j++)
+            for(int j = 0; j < dsize; j++)
             {
 //				cout << tmpx[j] << endl;
                 bestpx[j] = tmpx[j];//FIXME:段错误
@@ -196,6 +196,12 @@ void PSO::run()
 	//a[0] = 1;
 	//a[1] = 1;
 	//a[2] = 1;
+
+	//double *a = p[0].getx();
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	a[i] = 1;
+	//}
 
 	findbest();
     SwarmMove();
